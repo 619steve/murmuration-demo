@@ -6,12 +6,14 @@ export class LoginPage {
     readonly usernameInput: Locator;
     readonly passwordInput: Locator;
     readonly loginButton: Locator;
+    readonly errorMessage: Locator;
 
     constructor(page: Page) {
         this.page = page;
         this.usernameInput = page.locator('#user-name');
         this.passwordInput = page.locator('#password');
         this.loginButton = page.locator('#login-button');
+        this.errorMessage = page.locator('[data-test="error"]');
     }
 
     async goto() {
@@ -26,8 +28,14 @@ export class LoginPage {
         await this.passwordInput.fill(password);
     }
 
-    async clickLoginButton() {
+    async clickLoginButtonExpectSuccess(): Promise<ProductsPage> {
         await this.loginButton.click();
         return new ProductsPage(this.page);
+    }
+    
+    async clickLoginButtonExpectFailure():  Promise<LoginPage> {
+        await this.loginButton.click();
+        await this.errorMessage.isVisible();
+        return this;
     }
 }
